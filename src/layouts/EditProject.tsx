@@ -1,17 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box, Button, Grid } from '@mui/material'
 import { PrivilegeTable } from '../components/projectAdminsTable'
 import { TextField} from '@mui/material'
 import { ManageDialog } from '../components/dialogue'
 import { useParams } from 'react-router-dom'
+import { useAuthContext } from '../hooks/useAuthContext';
+import axios from '../api/axios';
+
 
 export const EditProject = () => {
   console.log("heyzzzz")
-  let {id , title : paramTitle, description : paramDescription} = useParams()
+  
+  const auth = useAuthContext(); 
+  let {id , title : paramTitle, description : paramDescription, status : paramStatus} = useParams()
   console.log(id , paramTitle , paramDescription)
   const [title, setTitle] = React.useState(paramTitle )
   const [description, setDescription] = React.useState(paramDescription)
+  const [status, setStatus] = React.useState()
   const [admins , setAdmins] = React.useState([{name :'farhat' , role : "admin" , id : "1"} , {name :'aziyaz' , role : "admin" , id : "2"}])
+  const [memebers , setMembers] = React.useState([])
+  const [update , setUpdate] = React.useState(false)
   const [viewers , setViewers] = React.useState([{name :'jilani' , role : "viewer" , id : "3"} , {name :'tijani' , role : "viewer" , id : "4"}])
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -20,15 +28,113 @@ export const EditProject = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(()=>{
+    if(status==1){
+      setStatus("open")
+
+    }else if(status==2){
+      setStatus("closed")
+
+    }else{
+      setStatus("not verified yet")
+    }
+
+
+  },[status])
   const deleteProject = () => {
     
-         
+    axios.delete("http://127.0.0.1:8000/projects/project-delete/"+id+"/", 
+      {
+        headers: { 'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${auth?.user?.access}`,
+      },
+      
+
+
+      
+
+      }
+    ).then((response) => {
+      // TODO: remove console.logs before deployment
+   
+
+
+  
+
+  }).catch((err)=>{
+    if (!err) {
+      console.log('No Server Response');
+    }  else {
+      console.log(err)
+      console.log('No data' )
+    }
+  }) ;
 
  
   }
   const handleSubmit = () => {
-    console.log('submit')
+    axios.post("http://127.0.0.1:8000/projects/project-update/"+id+"/", {title:title,description:description},
+    {
+      headers: { 'Content-Type': 'application/json',
+                  "Authorization": `Bearer ${auth?.user?.access}`,
+        },
+        
+
+
+        
+
+        }
+      ).then((response) => {
+        // TODO: remove console.logs before deployment
+    
+
+    setMembers(JSON.parse(response?.data))
+
+
+
+    }).catch((err)=>{
+      if (!err) {
+        console.log('No Server Response');
+      }  else {
+        console.log(err)
+        console.log('No data' )
+      }
+    }) ;
   }
+
+
+   React.useEffect( ()=>{
+
+      axios.get("http://127.0.0.1:8000/projects/project-members/list/"+id+"/", 
+       {
+         headers: { 'Content-Type': 'application/json',
+                      "Authorization": `Bearer ${auth?.user?.access}`,
+        },
+        
+
+
+        
+
+       }
+     ).then((response) => {
+       // TODO: remove console.logs before deployment
+     console.log("zzzzzz:",JSON.parse(response?.data));
+
+    setMembers(JSON.parse(response?.data))
+
+    
+   
+   }).catch((err)=>{
+     if (!err) {
+       console.log('No Server Response');
+     }  else {
+        console.log(err)
+        console.log('No data' )
+     }
+   }) ;
+
+ },[update])
 
   React.useEffect(() => {
    // fetchEmployees()
@@ -71,6 +177,19 @@ export const EditProject = () => {
               onChange={(e) => setDescription(e.target.value)}
               multiline
             />
+            <TextField
+              value= {status}
+              margin="normal"
+              required
+              fullWidth
+              id="status"
+              label="status"
+              name="status"
+              autoComplete="status"
+              
+              multiline
+              disabled
+            />
             
       <Button variant="contained" color="success" onClick={() => {
         handleClickOpen()
@@ -78,7 +197,7 @@ export const EditProject = () => {
       <br />
       <div>PROJECT MEMBERS</div>
       <br />
-      <PrivilegeTable data={[...admins , ...viewers]} />
+      <PrivilegeTable data={[...memebers]} />
             <Button
               type="submit"
               fullWidth
@@ -86,7 +205,7 @@ export const EditProject = () => {
               sx={{ mt: 3, mb: 2 }}
             >update project</Button>
           </Box>
-      <ManageDialog open={open} handleClose={handleClose} handleClickOpen={handleClickOpen} id={id}  />
+      <ManageDialog open={open} handleClose={handleClose} setUpdate={setUpdate} handleClickOpen={handleClickOpen} id={id}  />
     </Grid>
   )
 }

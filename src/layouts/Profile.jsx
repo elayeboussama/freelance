@@ -5,10 +5,12 @@ import jwt_decode from "jwt-decode";
 import useAuth from "../hooks/useAuth";
 import ListDividers from '../components/list';
 import { useAuthContext } from '../hooks/useAuthContext';
-// import axios from '../api/axios';
+ import axios from '../api/axios';
+import { jaHira } from 'date-fns/locale';
 
 function Profile() {
   const auth = useAuthContext();
+  console.log(auth)
   const [dataIsReady, setDataIsReady] = React.useState(false)
   const [data, setData] = React.useState(null)
   const fetchUserProfile = async () => await axios.get("http://127.0.0.1:8000/users/profile/fetch/", {

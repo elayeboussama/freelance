@@ -4,10 +4,6 @@ from django.contrib.auth.models import User
 
 
 
-
-
-
-
 class Supplier_Company(models.Model):
     # this is for list one 
     company_name = models.CharField(max_length=50)

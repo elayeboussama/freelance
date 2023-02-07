@@ -86,12 +86,14 @@ def getRoutes(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def UserUpdate(request, pk):
-    project = User.objects.get(id=int(pk))
+    project = User.objects.get(id=pk)
     serializer = UserSerializer(instance=project, data=request.data)
     if serializer.is_valid():
+        
         serializer.save(profile_owner=request.user)
-    return Response('user is updated')
-
+    else:
+        print('valid e not serializer')
+    return Response(serializer.data)
 
 class ProfileView(generics.CreateAPIView):
     permission_classes = [

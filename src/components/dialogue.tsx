@@ -42,10 +42,10 @@ export const ManageDialog = ({
                 }
             }
         ).then((response) => {
-            console.log(response)
-            let employees  = [] ;
-            response?.data?.forEach((employee: any) => employees.push(employee))
-            setAdmins(employees )
+            console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",JSON.parse(response.data))
+             
+            setAdmins(JSON.parse(response.data) )
+             
         });
     }
     const addMember = async () => {
@@ -62,7 +62,8 @@ export const ManageDialog = ({
         if(response.status === 200){
 
             handleClose()
-
+            setUpdate(true)
+            // navigate(`edit/${project.id}/${project.title}/${project.description}`)
         }
 
     });
@@ -107,8 +108,8 @@ export const ManageDialog = ({
                         >
                             {admins?.map((admin) => {
                                 return (
-                                    <MenuItem key={admin.user_id} value={admin.user_id}>
-                                        {admin.user_id}
+                                    <MenuItem key={admin[0]} value={admin[0]}>
+                                        {admin[1][0].username}
                                     </MenuItem>
                                 );
                             })

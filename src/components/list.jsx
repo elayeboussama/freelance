@@ -9,7 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuthContext } from '../hooks/useAuthContext';
-const UPDATE_URL = 'api/register/';
+const UPDATE_URL = 'http://127.0.0.1:8000/users/user/update/';
+import jwt_decode from "jwt-decode";
 const theme = createTheme();
 export  default function  List({allData , user_type}) {
 
@@ -20,12 +21,12 @@ export  default function  List({allData , user_type}) {
     
     const navigate = useNavigate();
     
-  const [username, setUser] = useState(allData.username[0]);
-	const [firstname, setfirstname] = useState(allData.first_name[0]);
-	const [lastname, setlastname] = useState(allData.last_name[0]);
-	const [email, setEmail] = useState(allData.email[0]);
-  const { dispatch } = useAuthContext()
-    
+  const [username, setUser] = useState(allData[0].username);
+	const [firstname, setfirstname] = useState(allData[0].first_name);
+	const [lastname, setlastname] = useState(allData[0].last_name);
+	const [email, setEmail] = useState(allData[0].email);
+  const { dispatch  } = useAuthContext()
+  const auth = useAuthContext();
 
     // const [birthDay, setBirthDay] = useState(dayjs('2014-08-18T21:11:54'));
     // const handleChange = (newValue) => {
@@ -34,28 +35,17 @@ export  default function  List({allData , user_type}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-		console.log("submitted");
-   
-            const response = await axios.post(UPDATE_URL,
+		console.log("submitted",jwt_decode(auth?.user?.access)); 
+            const response = await axios.post(UPDATE_URL+ jwt_decode(auth?.user?.access).user_id +"/",
                 JSON.stringify({ username , email  , first_name : firstname, last_name : lastname  }),
                 {
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', "Authorization" : `Bearer ${auth?.user?.access}`},
                    
                 }
             ).then((response) => {
               console.log(JSON.stringify(response?.data));
               if(response?.status === 200){
-               axios.get("NAFESSS URL MTE# EL FETCH PROFILE" , {
-                  headers: { 
-                    'Content-Type': 'application/json' ,
-                    "Authorization" : `Bearer ${auth?.user?.access}`
-                  } 
-                }).then((response)=>{
-                  console.log(response)
-                  if(response?.status === 200){
-                    dispatch({type: 'LOGIN', payload: response?.data})
-                  }
-                                       })
+                window.location.reload(true)
             } 
              
             //console.log(JSON.stringify(response))

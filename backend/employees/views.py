@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from users.serializers import UserSerializer
 from django.http import JsonResponse
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -32,9 +33,10 @@ def getRoutes(request):
 
 @api_view(['POST'])
 def CustomerEmployeeRegister(request):
+    print(request.data)
     serializer = CustomerEmployeesSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(user_id=request.user)
+        serializer.save()
     return Response(serializer.data)
 
 @api_view(['POST'])
@@ -42,13 +44,16 @@ def CustomerEmployeeRegister(request):
 def SupplierEmployeeRegister(request):
     serializer = SupplierEmployeesSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(user_id=request.user)
+        serializer.save()
     return Response(serializer.data)    
 
 
+import json
+ 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def CustomerEmployeeList(request):
+    l = []
     company = Customer_Employees.objects.filter(user_id=request.user)
     company_serializer = CustomerEmployeesSerializer(company, many=True)
     
@@ -57,7 +62,17 @@ def CustomerEmployeeList(request):
     employee = Customer_Employees.objects.filter(company_id=company_id)
     print(request.data)
     serializer = CustomerEmployeesSerializer(employee, many=True)
-    return Response(serializer.data)
+    for i in serializer.data:
+        x = []
+        user_id = i['user_id']
+        user_name = User.objects.filter(id = user_id)
+        user_serializer = UserSerializer(user_name, many=True)
+        x = [i['user_id'],user_serializer.data]
+        print(x)
+        l.append(x)
+    json_data = json.dumps(l)  
+   
+    return Response(json_data)
 
 
 

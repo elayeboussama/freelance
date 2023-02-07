@@ -89,10 +89,12 @@ def Add_Member(request):
 
 
 @api_view(['GET'])
-def List_Project_Member(request):
+def List_Project_Member(request,pk):
+
+
     l = []
     dict_1 = {}
-    members = Project_Members.objects.filter(id_project=request.data['project_id'])
+    members = Project_Members.objects.filter(id_project=pk)
     serializer = ProjectMembersSerializer(members, many=True)
     for i in serializer.data:
         x= []
@@ -109,18 +111,13 @@ def List_Project_Member(request):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
 def Member_Delete(request, pk):
-    member = Project_Members.objects.get(id=pk)
+    member = Project_Members.objects.get(id_user=pk)
     member.delete()
     return Response('mumber succesfully deleted!')
 
 
-
-
-
-
-
+  
 
 #this is nothing
 class ProjectView(generics.CreateAPIView):

@@ -52,7 +52,7 @@ export default function SignUp() {
     await axios.post(endpointsURL.register,
         JSON.stringify({ username: user, email: email, first_name: firstname, last_name: lastname, password: pwd }),
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json'},
 
         }
       ).then((response) => {
@@ -74,7 +74,109 @@ export default function SignUp() {
         } else {
           console.log('Registration Failed')
         }
-      }) ;}
+      }) ;
+    
+
+
+
+      if(!isNewCompany){
+        
+        await axios.post("http://127.0.0.1:8000/employees/customer/register/",
+          JSON.stringify({  company_name: companyName, company_id: companyNames.map(e=>{if(companyName == e.company_name){return e.id} })[0] , company_type: companyNames.map(e=>{if(companyName == e.company_name){return e.company_type} })[0]   }),
+          {
+            headers: { 'Content-Type': 'application/json' },
+  
+          }
+        ).then((response) => {
+          // TODO: remove console.logs before deployment
+        console.log(JSON.stringify(response?.data));
+        
+        setUser('');
+        setPwd('');
+        setMatchPwd('');
+        setfirstname('');
+        setlastname('');
+        setEmail('');
+        navigate('/login', { replace: true });
+        }).catch((err)=>{
+          if (!err) {
+            console.log('No Server Response');
+          } else if (err.response?.status === 409) {
+            console.log('Username Taken');
+          } else {
+            console.log('Registration Failed')
+          }
+        }) ;
+      }
+
+
+
+
+
+    //create company 
+      if(isNewCompany){
+        if(companyType== "customer"){
+          await axios.post("http://127.0.0.1:8000/companies/customer/register/",
+            JSON.stringify({ company_name: companyName, adress: address, employees_number: employeesNumber, company_type: companyType }),
+            {
+              headers: { 'Content-Type': 'application/json' },
+    
+            }
+          ).then((response) => {
+            // TODO: remove console.logs before deployment
+          console.log(JSON.stringify(response?.data));
+          
+          setUser('');
+          setPwd('');
+          setMatchPwd('');
+          setfirstname('');
+          setlastname('');
+          setEmail('');
+          navigate('/login', { replace: true });
+          }).catch((err)=>{
+            if (!err) {
+              console.log('No Server Response');
+            } else if (err.response?.status === 409) {
+              console.log('Username Taken');
+            } else {
+              console.log('Registration Failed')
+            }
+          }) ;
+        }
+        else if( companyType == "supplier"){
+          await axios.post("http://127.0.0.1:8000/companies/supplier/register/",
+            JSON.stringify({ company_name: companyName, adress: address, employees_number: employeesNumber, company_type: companyType, project_size: ProjectSize, expertise:Expertise }),
+            {
+              headers: { 'Content-Type': 'application/json' },
+    
+            }
+          ).then((response) => {
+            // TODO: remove console.logs before deployment
+          console.log(JSON.stringify(response?.data));
+          
+          setUser('');
+          setPwd('');
+          setMatchPwd('');
+          setfirstname('');
+          setlastname('');
+          setEmail('');
+          navigate('/login', { replace: true });
+          }).catch((err)=>{
+            if (!err) {
+              console.log('No Server Response');
+            } else if (err.response?.status === 409) {
+              console.log('Username Taken');
+            } else {
+              console.log('Registration Failed')
+            }
+          }) ;
+        }
+      }
+      
+    
+    
+    
+    }
 
   return (
     <ThemeProvider theme={theme}>
