@@ -16,7 +16,7 @@ export const EditProject = () => {
   console.log(id , paramTitle , paramDescription)
   const [title, setTitle] = React.useState(paramTitle )
   const [description, setDescription] = React.useState(paramDescription)
-  const [status, setStatus] = React.useState()
+  const [status, setStatus] = React.useState(paramStatus)
   const [admins , setAdmins] = React.useState([{name :'farhat' , role : "admin" , id : "1"} , {name :'aziyaz' , role : "admin" , id : "2"}])
   const [memebers , setMembers] = React.useState([])
   const [update , setUpdate] = React.useState(false)
@@ -33,10 +33,12 @@ export const EditProject = () => {
     if(status==1){
       setStatus("open")
 
-    }else if(status==2){
+    }
+    if(status==2){
       setStatus("closed")
 
-    }else{
+    }
+    if(status==0){
       setStatus("not verified yet")
     }
 

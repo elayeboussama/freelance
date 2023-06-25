@@ -51,7 +51,7 @@ export const ManageProject = () => {
                                 <Typography>
                                     {project.description} 
                                 </Typography>
-                                <Button variant="contained" onClick={()=> navigate(`edit/${project.id}/${project.title}/${project.description}/${project.status}` )}>
+                                <Button style={{marginVertical: 10}} variant="contained" onClick={()=> navigate(`edit/${project.id}/${project.title}/${project.description}/${project.status}` )}>
                                     manage
                                 </Button >
                         </Grid>
